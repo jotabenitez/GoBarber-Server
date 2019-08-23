@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import mongoose from 'mongoose';
 
 import User from '../app/models/User';
 import File from '../app/models/File';
@@ -10,20 +11,23 @@ const models = [User, File, Appointment];
 
 class Database {
   constructor() {
-    this.connection = new Sequelize(databaseConfig);
-
     this.init();
-    this.associate();
+    this.mongo();
   }
 
   init() {
-    models.map(model => model.init(this.connection));
+    this.connection = new Sequelize(databaseConfig);
+
+    models
+      .map(model => model.init(this.connection))
+      .map(model => model.associate && model.associate(this.connection.models));
   }
 
-  associate() {
-    models.map(
-      model => model.associate && model.associate(this.connection.models)
-    );
+  async mongo() {
+    this.mongoConnection = await mongoose.connect(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useFindAndModify: true,
+    });
   }
 }
 

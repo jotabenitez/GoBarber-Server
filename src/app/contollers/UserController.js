@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 
 import User from '../models/User';
+import File from '../models/File';
 
 class UserController {
   async store(req, res) {
@@ -24,7 +25,11 @@ class UserController {
       return res.status(400).json({ error: 'User already exists.' });
     }
 
-    const { id, name, email, provider } = await User.create(req.body);
+    await User.create(req.body);
+
+    const { id, name, avatar, provider } = await User.findByPk(req.userId, {
+      include
+    })
 
     return res.json({
       id,
@@ -69,16 +74,28 @@ class UserController {
       return res.status(401).json({ error: 'Password does not match.' });
     }
 
-    const { id, name, provider } = await user.update(req.body);
+    await user.update(req.body);
+
+    const { id, name, avatar, provider } = await User.findByPk(req.userId, {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['avatar', 'path', 'url'],
+        }
+      ]
+    })
 
     return res.json({
       id,
       name,
       email,
       provider,
+      avatar,
     });
   }
 
+  // rotas adicionadas por mim
   async show(req, res) {
     const user = await User.findByPk(req.userId);
 
@@ -93,6 +110,15 @@ class UserController {
     }
 
     res.json({ ok: true });
+  }
+
+  async index(req, res) {
+    const users = await User.findAll({
+      where: { provider: false },
+      attributes: ['id', 'name', 'email'],
+    });
+
+    return res.json({ users });
   }
 }
 
