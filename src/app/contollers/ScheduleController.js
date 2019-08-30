@@ -34,6 +34,7 @@ class ScheduleController {
       ],
       order: ['date'],
     });
+
     // const schedule = await Appointment.findAll({
     //   where: { provider_id: req.userId },
     //   attributes: ['date'],

@@ -10,6 +10,7 @@ class UserController {
       email: Yup.string()
         .email()
         .required(),
+      provider: Yup.boolean().default(false), // adicionado por mim p criar provedor
       password: Yup.string()
         .required()
         .min(6),
@@ -25,17 +26,16 @@ class UserController {
       return res.status(400).json({ error: 'User already exists.' });
     }
 
-    await User.create(req.body);
+    const user = await User.create(req.body);
 
-    const { id, name, avatar, provider } = await User.findByPk(req.userId, {
-      include
-    })
+    const { id, name, email, avatar, provider } = user;
 
     return res.json({
       id,
       name,
       email,
       provider,
+      avatar,
     });
   }
 
@@ -82,9 +82,9 @@ class UserController {
           model: File,
           as: 'avatar',
           attributes: ['avatar', 'path', 'url'],
-        }
-      ]
-    })
+        },
+      ],
+    });
 
     return res.json({
       id,
