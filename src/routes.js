@@ -36,8 +36,8 @@ routes.delete('/appointments/:id', AppointmentController.delete);
 
 routes.get('/schedule', ScheduleController.index);
 
-routes.get('/notification', NotificationController.index);
-routes.put('/notification/:id', NotificationController.update);
+routes.get('/notifications', NotificationController.index);
+routes.put('/notifications/:id', NotificationController.update);
 
 // rotas adiciocadas p mim
 routes.get('/users', UserController.show);

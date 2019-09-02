@@ -58,7 +58,7 @@ class AppointmentController {
     if (!checkUserIsProvider) {
       return res
         .status(401)
-        .json({ error: 'You can only create appointments with yourself.' });
+        .json({ error: 'You can not create appointments with yourself.' });
     }
 
     const checkIsProvider = await User.findOne({
